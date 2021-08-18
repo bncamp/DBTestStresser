@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DBTestStresser.Model {
@@ -31,6 +32,13 @@ namespace DBTestStresser.Model {
         public JsonDocument ToJSON() {
             string content = JsonConvert.SerializeObject(this);
             var json = JsonDocument.Parse(content);
+            return json;
+        }
+
+        public string ToCypherJsonString() {
+            string json = JsonConvert.SerializeObject(this);
+            string regex = "\"([^\"]+)\":"; // capture property
+            json = Regex.Replace(json, regex, "$1:");
             return json;
         }
     }

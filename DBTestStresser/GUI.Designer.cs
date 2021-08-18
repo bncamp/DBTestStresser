@@ -38,6 +38,7 @@ namespace DBTestStresser {
             this.btn_launch = new System.Windows.Forms.Button();
             this.btn_populate = new System.Windows.Forms.Button();
             this.btn_test = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -67,6 +68,7 @@ namespace DBTestStresser {
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.cb_dbms);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.label2);
@@ -75,7 +77,7 @@ namespace DBTestStresser {
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(299, 133);
+            this.groupBox1.Size = new System.Drawing.Size(299, 166);
             this.groupBox1.TabIndex = 3;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Server Infos";
@@ -110,9 +112,9 @@ namespace DBTestStresser {
             // 
             this.groupBox2.Controls.Add(this.cb_operation);
             this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Location = new System.Drawing.Point(12, 151);
+            this.groupBox2.Location = new System.Drawing.Point(12, 184);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(299, 115);
+            this.groupBox2.Size = new System.Drawing.Size(299, 82);
             this.groupBox2.TabIndex = 4;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Test Parameters";
@@ -173,6 +175,17 @@ namespace DBTestStresser {
             this.btn_test.UseVisualStyleBackColor = true;
             this.btn_test.Click += new System.EventHandler(this.btn_test_Click);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.ForeColor = System.Drawing.SystemColors.AppWorkspace;
+            this.label5.Location = new System.Drawing.Point(79, 120);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(198, 20);
+            this.label5.TabIndex = 7;
+            this.label5.Text = "Empty : default DBMS port";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // GUI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -184,6 +197,8 @@ namespace DBTestStresser {
             this.Controls.Add(this.tb_log);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
             this.Name = "GUI";
             this.Text = "DBTestStresser";
             this.groupBox1.ResumeLayout(false);
@@ -211,6 +226,7 @@ namespace DBTestStresser {
         private System.Windows.Forms.Button btn_launch;
         private System.Windows.Forms.Button btn_populate;
         private System.Windows.Forms.Button btn_test;
+        private System.Windows.Forms.Label label5;
     }
 }
 

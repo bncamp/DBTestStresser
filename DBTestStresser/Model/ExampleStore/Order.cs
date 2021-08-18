@@ -10,8 +10,11 @@ using System.Threading.Tasks;
 namespace DBTestStresser.Model {
     public class Order : ExampleStore.ModelExampleStore{
         public int Id { get; set; }
+
+        public string Date { get; set; }
         public Product Product { get; set; }
         public Customer Customer { get; set; }
+
 
         public static Order GenerateRandom(int maxProductId, int maxCustomerId, int maxBrandId, int id = -1) {
             Order o = new Order();
@@ -19,11 +22,18 @@ namespace DBTestStresser.Model {
             int p_id = RandomDB.GenerateRandomInt(0, maxProductId);
             int c_id = RandomDB.GenerateRandomInt(0, maxCustomerId);
             o.Product = Product.GenerateRandom(maxBrandId,p_id);
+            o.Date = RandomDB.GenerateRandomString(10);
             o.Customer = Customer.GenerateRandom(p_id);
 
             return o;
         }
 
+        public string ToCypherJsonString() {
+            // Avoid serializing Brand in graph
+            string json = "{" + String.Format("Id:{0},Date:\"{1}\"",
+                Id,Date) + "}";
+            return json;
+        }
         public JsonDocument ToJSON() {
             Order o = this;
             string content = JsonConvert.SerializeObject(o);

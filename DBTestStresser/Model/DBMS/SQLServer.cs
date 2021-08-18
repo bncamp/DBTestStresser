@@ -125,7 +125,7 @@ namespace DBTestStresser.Model.DBMS {
         }
 
         public override void ReadQuery(DatabaseConnection cnx, string query) {
-            var cmd = new SqlCommand(query, (SqlConnection) cnx.GetConnexion());
+            var cmd = new SqlCommand(query, (SqlConnection) cnx.GetConnectionInstance());
             var reader = cmd.ExecuteReader();
             var p = new Product();
             var b = new Brand();
@@ -138,7 +138,7 @@ namespace DBTestStresser.Model.DBMS {
         }
 
         public override void WriteQuery(DatabaseConnection cnx, string query) {
-            var cmd = new SqlCommand(query, (SqlConnection)cnx.GetConnexion());
+            var cmd = new SqlCommand(query, (SqlConnection)cnx.GetConnectionInstance());
             cmd.ExecuteNonQuery();
         }
 

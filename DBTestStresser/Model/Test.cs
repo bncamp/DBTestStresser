@@ -86,6 +86,7 @@ namespace DBTestStresser.Model {
             ConcurrentBag<string> outputs, string query) {
 
             Stopwatch threadChrono = new Stopwatch();
+            
             ExecutionStopwatch queryChrono = new ExecutionStopwatch();
             var cnx = dbms.GetConnection();
             string operation = this.Serie.OperationType;

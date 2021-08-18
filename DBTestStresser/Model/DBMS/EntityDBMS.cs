@@ -59,6 +59,9 @@ namespace DBTestStresser.Model {
                 case "MongoDB":
                     dbms = (EntityDBMS)new MongoDb(ip, port);
                     break;
+                case "Neo4j":
+                    dbms = (EntityDBMS) new Neo4J(ip, port);
+                    break;
             }
 
             return dbms;

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace DBTestStresser.Model {
@@ -35,7 +36,12 @@ namespace DBTestStresser.Model {
             var json = JsonDocument.Parse(content);
             return json;
         }
-
+        public string ToCypherJsonString() {
+            // Avoid serializing Brand in graph
+            string json = "{" + String.Format("Id:{0},Name:\"{1}\",Price:{2},Stock:{3}",
+                Id,Name,Price,Stock) + "}";
+            return json;
+        }
         public override string ToString() {
             return String.Format("{0}:{1},{2},{3}({4})",Id,Brand,Name,Price,Stock);
         }

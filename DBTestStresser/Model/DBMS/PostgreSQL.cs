@@ -37,7 +37,7 @@ namespace DBTestStresser.Model.DBMS {
             return new DatabaseConnection((DbConnection) new NpgsqlConnection(BuildConnectionString()));
         }
         public override void ReadQuery(DatabaseConnection cnx, string query) {
-            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx.GetConnexion());
+            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx.GetConnectionInstance());
             //object r = cmd.ExecuteScalar();   
             Stopwatch s = new Stopwatch();
             s.Start();
@@ -56,14 +56,14 @@ namespace DBTestStresser.Model.DBMS {
         }
 
         public override void WriteQuery(DatabaseConnection cnx, string query) {
-            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx.GetConnexion());
+            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx.GetConnectionInstance());
             cmd.ExecuteNonQuery();
         }
 
         public override void PopulateDB() {
             GUI.Log("Building insert queries...");
             var cnx = new NpgsqlConnection(BuildConnectionString());
-            
+            // TODO pk c parti
             cnx.Close();
         }
 

@@ -28,6 +28,7 @@ namespace DBTestStresser {
             cb_dbms.Items.Add("MySQL");
             cb_dbms.Items.Add("SQLServer");
             cb_dbms.Items.Add("MongoDB");
+            cb_dbms.Items.Add("Neo4j");
             cb_dbms.SelectedIndex = 0;
 
             tb_ip.Text = ConfigurationManager.AppSettings.Get("server-ip");
@@ -49,7 +50,7 @@ namespace DBTestStresser {
             string port = tb_port.Text;
             string dbmsName = cb_dbms.Items[cb_dbms.SelectedIndex].ToString();
             tb_log.Text = "";
-            if (!String.IsNullOrEmpty(ip) && !String.IsNullOrEmpty(port) && !String.IsNullOrEmpty(dbmsName)) {
+            if (!String.IsNullOrEmpty(ip) && !String.IsNullOrEmpty(dbmsName)) {
                 TestSeries ts = new TestSeries();
                 SaveInputsToConfig(ip, port);
                 ts.OperationType = cb_operation.Items[cb_operation.SelectedIndex].ToString();
@@ -59,7 +60,7 @@ namespace DBTestStresser {
 
                 ts.Execute();
             } else {
-                Log("ERROR : Please mention Server's IP and Port.");
+                Log("ERROR : Please mention DMBS & Server IP.");
             }
         }
 
@@ -75,11 +76,12 @@ namespace DBTestStresser {
             string ip = tb_ip.Text;
             string port = tb_port.Text;
 
-            if (!String.IsNullOrEmpty(dbmsName) && !String.IsNullOrEmpty(ip)
-                && !String.IsNullOrEmpty(port)) {
+            if (!String.IsNullOrEmpty(dbmsName) && !String.IsNullOrEmpty(ip)) {
                 var dbms = EntityDBMS.CreateDBMS(dbmsName,ip, port); ;
                 SaveInputsToConfig(ip, port);
                 dbms.PopulateDB();
+            } else {
+                Log("ERROR : Please mention DMBS & Server IP.");
             }
         }
 
@@ -97,10 +99,15 @@ namespace DBTestStresser {
             string dbmsName = cb_dbms.Items[cb_dbms.SelectedIndex].ToString();
             string ip = tb_ip.Text;
             string port = tb_port.Text;
-            var dbms = EntityDBMS.CreateDBMS(dbmsName, ip, port);
-            GUI.Log("Testing connection to DB...");
-            string res = dbms.TestConnection();
-            GUI.Log(res);
+            if (!String.IsNullOrEmpty(dbmsName) && !String.IsNullOrEmpty(ip)) {
+                var dbms = EntityDBMS.CreateDBMS(dbmsName, ip, port);
+                GUI.Log("Testing connection to DB...");
+                string res = dbms.TestConnection();
+                GUI.Log(res);
+            } else {
+                Log("ERROR : Please mention DMBS & Server IP.");
+            }
+            
         }
     }
 }
