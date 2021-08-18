@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DBTestStresser.Util {
@@ -28,6 +29,39 @@ namespace DBTestStresser.Util {
             return queries;
         }
 
+        public static string[] GenerateRandomMongoSHFilters(int amount) {
+            int productNbPerPage = 100;
+            string[] filters = new string[amount];
+            int greater, lower;
+            string filter;
+            for (int i = 0; i < amount; i++) {
+                greater = RandomDB.GenerateRandomInt(0, EntityDBMS.N_PRODUCTS - productNbPerPage);
+                lower = greater + productNbPerPage;
+                filter =
+                    "{" +
+                        "_id : {" +
+                            "$gte:" + greater + "," +
+                            "$lte: " + lower + "" +
+                        "}" +
+                    "}";
+                filters[i] = filter;
+            }
+            
+
+            return filters;
+        }
+
+        public static string[] GenerateRandomMongoJsons(int amount) {
+            string[] jsons = new string[amount];
+            
+            for (int i = 0; i < amount; i++) {
+                
+                jsons[i] = Order.GenerateRandom(EntityDBMS.N_PRODUCTS, EntityDBMS.N_CUSTOMERS,
+                    EntityDBMS.N_BRANDS, -1).ToJsonString();
+            }
+
+            return jsons;
+        }
         public static string[] GenerateRandomSQLWriteQueries(int amount) {
             var queries = new string[amount];
             // TODO STUB

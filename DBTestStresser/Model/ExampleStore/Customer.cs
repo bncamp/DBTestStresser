@@ -8,14 +8,14 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DBTestStresser.Model {
-    public class Customer {
+    public class Customer : ExampleStore.ModelExampleStore {
 
-        int Id { get; set; }
-        string Surname { get; set; }
-        string Name { get; set; }
+        public int Id { get; set; }
+        public string Surname { get; set; }
+        public string Name { get; set; }
 
-        string City { get; set; }
-        string Email { get; set; }
+        public string City { get; set; }
+        public string Email { get; set; }
 
         public static Customer GenerateRandom(int id = -1) {
             Customer c = new Customer();

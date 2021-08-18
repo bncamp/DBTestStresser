@@ -16,7 +16,7 @@ namespace DBTestStresser.Model.DBMS {
         }
         public PostgreSQL(string ip, string port) {
             this.Ip = ip;
-            this.Port = port;
+            this.Port = !String.IsNullOrEmpty(port) ? port : "5432";
             this.Name = "PostgreSQL";
         }
         public override string BuildConnectionString() {
@@ -33,11 +33,11 @@ namespace DBTestStresser.Model.DBMS {
             return cnx_str;
         }
 
-        public override DbConnection GetConnection() {
-            return (DbConnection) new NpgsqlConnection(BuildConnectionString());
+        public override DatabaseConnection GetConnection() {
+            return new DatabaseConnection((DbConnection) new NpgsqlConnection(BuildConnectionString()));
         }
-        public override void ReadQuery(DbConnection cnx, string query) {
-            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx);
+        public override void ReadQuery(DatabaseConnection cnx, string query) {
+            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx.GetConnexion());
             //object r = cmd.ExecuteScalar();   
             Stopwatch s = new Stopwatch();
             s.Start();
@@ -55,8 +55,8 @@ namespace DBTestStresser.Model.DBMS {
             Console.WriteLine("mesure ds query : " + s.ElapsedMilliseconds + "ms");
         }
 
-        public override void WriteQuery(DbConnection cnx, string query) {
-            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx);
+        public override void WriteQuery(DatabaseConnection cnx, string query) {
+            var cmd = new NpgsqlCommand(query, (NpgsqlConnection)cnx.GetConnexion());
             cmd.ExecuteNonQuery();
         }
 
@@ -67,6 +67,25 @@ namespace DBTestStresser.Model.DBMS {
             cnx.Close();
         }
 
-        
+        public override string[] GenerateRandomReadQueries(int amount) {
+            return RandomDB.GenerateRandomSQLReadQueries(amount);
+        }
+
+        public override string[] GenerateRandomWriteQueries(int amount) {
+            return RandomDB.GenerateRandomSQLWriteQueries(amount);
+        }
+
+        public override string TestConnection() {
+            string ret = "Connection successful !";
+            try {
+                var cnx = GetConnection();
+                cnx.Open();
+                cnx.Close();
+            } catch (Exception e) {
+                ret = "Connexion error : " + e.Message;
+            }
+
+            return ret;
+        }
     }
 }

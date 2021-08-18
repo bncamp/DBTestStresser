@@ -10,13 +10,21 @@ namespace DBTestStresser.Model {
     public abstract class EntityDBMS {
 
         public string Ip;
+        public string DefaultPort;
         public string Port;
         public string Name;
+        
+        public DatabaseConnection DbConnection;
+        public string QueryLangage;
 
         // DATABASE PROPERTIES
         public const string DB_NAME = "ExampleStore";
         public const string USER_NAME = "u_store";
         public const string PASSWORD = "store";
+
+        // Query Langage List
+        public const string QL_SQL = "SQL";
+        public const string QL_MONGOSH = "MongoSH";
 
         // COLUMNS
         public const string C_CUSTOMERS = "customers";
@@ -30,12 +38,12 @@ namespace DBTestStresser.Model {
         public const int N_CUSTOMERS = 10000;
         public const int N_ORDERS = 20000;
 
-        public abstract void ReadQuery(DbConnection cnx, string query);
-        public abstract void WriteQuery(DbConnection cnx, string query);
+        public abstract void ReadQuery(DatabaseConnection cnx, string query);
+        public abstract void WriteQuery(DatabaseConnection cnx, string query);
         public abstract void PopulateDB();
         public abstract string BuildConnectionString();
 
-        public abstract DbConnection GetConnection();
+        public abstract DatabaseConnection GetConnection();
         public static EntityDBMS CreateDBMS(string name, string ip, string port) {
             EntityDBMS dbms = null;
             switch(name) {
@@ -56,7 +64,9 @@ namespace DBTestStresser.Model {
             return dbms;
             
         }
+        public abstract string[] GenerateRandomReadQueries(int amount);
+        public abstract string[] GenerateRandomWriteQueries(int amount);
 
-        
+        public abstract string TestConnection();
     }
 }

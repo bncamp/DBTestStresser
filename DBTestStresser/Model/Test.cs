@@ -57,8 +57,8 @@ namespace DBTestStresser.Model {
                 }
                 if (threadTimes.Count > 0) {
                     threadMean = threadMean / threadTimes.Count;
-                    queriesMean = queriesMean / queriesTimes.Count;
-                    totalMean = chrono.ElapsedMilliseconds / queriesTimes.Count;
+                    //queriesMean = queriesMean / queriesTimes.Count;
+                    //totalMean = chrono.ElapsedMilliseconds / queriesTimes.Count;
                 }
                 debug += "}";
                 //Console.WriteLine(debug);
@@ -88,38 +88,44 @@ namespace DBTestStresser.Model {
             Stopwatch threadChrono = new Stopwatch();
             ExecutionStopwatch queryChrono = new ExecutionStopwatch();
             var cnx = dbms.GetConnection();
-
+            string operation = this.Serie.OperationType;
             try {
-                cnx.Open();
+
                 threadChrono.Start();
-                queryChrono.Start();
-                if (this.Serie.OperationType == "Read") {
+
+                if (cnx.NeedConnexionOpening)
+                    cnx.Open();
+                
+                if (operation == "Read") {
                     dbms.ReadQuery(cnx, query);
-                } else {
+                } else if (operation == "Write"){
                     dbms.WriteQuery(cnx, query);
                 }
+
+                if (cnx.NeedConnexionOpening)
+                    cnx.Close();
+
                 threadChrono.Stop();
-                queryChrono.Stop();
-                cnx.Close();
             } catch (Exception e) {
                 outputs.Add("ERROR : " + e.Message + "\n" + e.StackTrace);
-                if (cnx.State == System.Data.ConnectionState.Open) {
+                if (cnx.NeedConnexionOpening 
+                    && cnx.GetState() == System.Data.ConnectionState.Open) {
                     cnx.Close();
                 }
-                if (threadChrono.IsRunning) {
-                    threadChrono.Stop();
-                }
-                if (queryChrono.IsRunning) {
-                    queryChrono.Stop();
-                }
+                //if (threadChrono.IsRunning) {
+                //    threadChrono.Stop();
+                //}
+                //if (queryChrono.IsRunning) {
+                //    queryChrono.Stop();
+                //}
             }
 
             // Thread end
             threadTimes.Add(threadChrono.ElapsedMilliseconds);
-            queryTimes.Add(queryChrono.Elapsed.TotalMilliseconds);
+            //queryTimes.Add(queryChrono.Elapsed.TotalMilliseconds);
 
-            Console.WriteLine("thread : " + threadChrono.ElapsedMilliseconds + "; query : "
-                + queryChrono.Elapsed.ToString());
+            //Console.WriteLine("thread : " + threadChrono.ElapsedMilliseconds + "; query : "
+            //    + queryChrono.Elapsed.ToString());
         }
     }
 }

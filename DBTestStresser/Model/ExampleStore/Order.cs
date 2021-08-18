@@ -8,10 +8,10 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DBTestStresser.Model {
-    public class Order {
-        int Id { get; set; }
-        Product Product { get; set; }
-        Customer Customer { get; set; }
+    public class Order : ExampleStore.ModelExampleStore{
+        public int Id { get; set; }
+        public Product Product { get; set; }
+        public Customer Customer { get; set; }
 
         public static Order GenerateRandom(int maxProductId, int maxCustomerId, int maxBrandId, int id = -1) {
             Order o = new Order();
@@ -25,9 +25,18 @@ namespace DBTestStresser.Model {
         }
 
         public JsonDocument ToJSON() {
-            string content = JsonConvert.SerializeObject(this);
+            Order o = this;
+            string content = JsonConvert.SerializeObject(o);
+            //Newtonsoft.Json.JsonSerializer serializer = new Newtonsoft.Json.JsonSerializer();
+
             var json = JsonDocument.Parse(content);
             return json;
+        }
+
+        public string ToJsonString() {
+            Order o = this;
+            string content = JsonConvert.SerializeObject(o);
+            return content;
         }
     }
 }

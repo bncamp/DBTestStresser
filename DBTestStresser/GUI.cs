@@ -93,6 +93,14 @@ namespace DBTestStresser {
             ConfigurationManager.RefreshSection("appSettings");
         }
 
-        
+        private void btn_test_Click(object sender, EventArgs e) {
+            string dbmsName = cb_dbms.Items[cb_dbms.SelectedIndex].ToString();
+            string ip = tb_ip.Text;
+            string port = tb_port.Text;
+            var dbms = EntityDBMS.CreateDBMS(dbmsName, ip, port);
+            GUI.Log("Testing connection to DB...");
+            string res = dbms.TestConnection();
+            GUI.Log(res);
+        }
     }
 }

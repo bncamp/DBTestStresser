@@ -20,7 +20,7 @@ namespace DBTestStresser.Model {
         private string DIR_CSV_URL = @".\CSV";
 
         public TestSeries() {
-            ConcurrencyAmounts = new int[] { 5, 10, 50, 100, 300, 500, 1000, 5000, 10000 };//, 50000 };//, 100000 }; //500000, 1000000};
+            ConcurrencyAmounts = new int[] {1, 5, 10, 50, 100, 300, 500, 1000, 5000, 10000 };//, 50000 };//, 100000 }; //500000, 1000000};
             CSV = "sep=;\nConcurrency amount; Average thread execution time (ms); " +
                 "Average query execution time (ms); Total threads executions times / thread number (ms)\n";
         }
@@ -32,10 +32,13 @@ namespace DBTestStresser.Model {
                 string[] queries = null;
                 switch (OperationType) {
                     case "Read":
-                        queries = RandomDB.GenerateRandomSQLReadQueries(amount);
+                        queries = DBMS.GenerateRandomReadQueries(amount);
+
+                        //queries = RandomDB.GenerateRandomSQLReadQueries(amount);
                     break;
                     case "Write":
-                        queries = RandomDB.GenerateRandomSQLWriteQueries(amount);
+                        queries = DBMS.GenerateRandomWriteQueries(amount);                        
+                        //queries = RandomDB.GenerateRandomSQLWriteQueries(amount);
                         break;
                 }
 

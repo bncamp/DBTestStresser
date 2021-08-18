@@ -8,7 +8,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace DBTestStresser.Model {
-    public class Product {
+    public class Product : ExampleStore.ModelExampleStore {
         public int Id { get; set; }
         public Brand Brand { get; set; }
         public string Name { get; set; }
@@ -36,6 +36,8 @@ namespace DBTestStresser.Model {
             return json;
         }
 
-        
+        public override string ToString() {
+            return String.Format("{0}:{1},{2},{3}({4})",Id,Brand,Name,Price,Stock);
+        }
     }
 }

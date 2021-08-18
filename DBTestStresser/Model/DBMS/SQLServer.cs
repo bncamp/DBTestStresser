@@ -14,6 +14,7 @@ namespace DBTestStresser.Model.DBMS {
             this.Ip = ip;
             this.Port = port;
             this.Name = "SQLServer";
+            this.Port = !String.IsNullOrEmpty(port) ? port : "1433";
         }
 
         public override string BuildConnectionString() {
@@ -38,8 +39,16 @@ namespace DBTestStresser.Model.DBMS {
 
         }
 
-        public override DbConnection GetConnection() {
-            return new SqlConnection(BuildConnectionString());
+        public override string[] GenerateRandomReadQueries(int amount) {
+            return RandomDB.GenerateRandomSQLReadQueries(amount);
+        }
+
+        public override string[] GenerateRandomWriteQueries(int amount) {
+            return RandomDB.GenerateRandomSQLWriteQueries(amount);
+        }
+
+        public override DatabaseConnection GetConnection() {
+            return new DatabaseConnection(new SqlConnection(BuildConnectionString()));
         }
 
         public override void PopulateDB() {
@@ -115,8 +124,8 @@ namespace DBTestStresser.Model.DBMS {
             cnx.Close();
         }
 
-        public override void ReadQuery(DbConnection cnx, string query) {
-            var cmd = new SqlCommand(query, (SqlConnection) cnx);
+        public override void ReadQuery(DatabaseConnection cnx, string query) {
+            var cmd = new SqlCommand(query, (SqlConnection) cnx.GetConnexion());
             var reader = cmd.ExecuteReader();
             var p = new Product();
             var b = new Brand();
@@ -128,9 +137,22 @@ namespace DBTestStresser.Model.DBMS {
             }
         }
 
-        public override void WriteQuery(DbConnection cnx, string query) {
-            var cmd = new SqlCommand(query, (SqlConnection)cnx);
+        public override void WriteQuery(DatabaseConnection cnx, string query) {
+            var cmd = new SqlCommand(query, (SqlConnection)cnx.GetConnexion());
             cmd.ExecuteNonQuery();
+        }
+
+        public override string TestConnection() {
+            string ret = "Connection successful !";
+            try {
+                var cnx = GetConnection();
+                cnx.Open();
+                cnx.Close();
+            } catch (Exception e) {
+                ret = "Connexion error : " + e.Message;
+            }
+
+            return ret;
         }
     }
 }

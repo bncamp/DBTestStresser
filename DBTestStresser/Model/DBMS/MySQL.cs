@@ -12,7 +12,8 @@ namespace DBTestStresser.Model.DBMS {
 
         public MySQL(string ip, string port) {
             this.Ip = ip;
-            this.Port = port;
+            this.Port = !String.IsNullOrEmpty(port) ? port : "3306";
+            
             this.Name = "MySQL";
         }
         public override string BuildConnectionString() {
@@ -26,8 +27,16 @@ namespace DBTestStresser.Model.DBMS {
                 );
         }
 
-        public override DbConnection GetConnection() {
-            return new MySqlConnection(BuildConnectionString());
+        public override string[] GenerateRandomReadQueries(int amount) {
+            return RandomDB.GenerateRandomSQLReadQueries(amount);
+        }
+
+        public override string[] GenerateRandomWriteQueries(int amount) {
+            return RandomDB.GenerateRandomSQLWriteQueries(amount); ;
+        }
+
+        public override DatabaseConnection GetConnection() {
+            return new DatabaseConnection(new MySqlConnection(BuildConnectionString()));
         }
 
         public override void PopulateDB() {
@@ -94,8 +103,9 @@ namespace DBTestStresser.Model.DBMS {
             cnx.Close();
         }
 
-        public override void ReadQuery(DbConnection cnx, string query) {
-            var cmd = new MySqlCommand(query, (MySqlConnection)cnx);
+        public override void ReadQuery(DatabaseConnection cnx, string query) {
+            
+            var cmd = new MySqlCommand(query, (MySqlConnection)cnx.GetConnexion());
             var reader = cmd.ExecuteReader();
             var p = new Product();
             var b = new Brand();
@@ -107,8 +117,21 @@ namespace DBTestStresser.Model.DBMS {
             }
         }
 
-        public override void WriteQuery(DbConnection cnx, string query) {
-            var cmd = new MySqlCommand(query, (MySqlConnection)cnx);
+        public override string TestConnection() {
+            string ret = "Connection successful !";
+            try {
+                var cnx = GetConnection();
+                cnx.Open();
+                cnx.Close();
+            } catch (Exception e) {
+                ret = "Connexion error : " + e.Message;
+            }
+
+            return ret;
+        }
+
+        public override void WriteQuery(DatabaseConnection cnx, string query) {
+            var cmd = new MySqlCommand(query, (MySqlConnection)cnx.GetConnexion());
             cmd.ExecuteNonQuery();
         }
     }
