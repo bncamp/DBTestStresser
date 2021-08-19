@@ -29,6 +29,7 @@ namespace DBTestStresser {
             cb_dbms.Items.Add("SQLServer");
             cb_dbms.Items.Add("MongoDB");
             cb_dbms.Items.Add("Neo4j");
+            cb_dbms.Items.Add("Cassandra");
             cb_dbms.SelectedIndex = 0;
 
             tb_ip.Text = ConfigurationManager.AppSettings.Get("server-ip");

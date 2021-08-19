@@ -62,6 +62,9 @@ namespace DBTestStresser.Model {
                 case "Neo4j":
                     dbms = (EntityDBMS) new Neo4J(ip, port);
                     break;
+                case "Cassandra":
+                    dbms = (EntityDBMS) new DBMS.Cassandra(ip, port);
+                    break;
             }
 
             return dbms;

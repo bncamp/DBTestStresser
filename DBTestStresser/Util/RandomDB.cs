@@ -129,6 +129,60 @@ namespace DBTestStresser.Util {
             return values;
         }
 
+        public static List<string> BuildCQLInsertIntoValues(
+            List<string> types, 
+            string insertRoot, 
+            int amount,
+            int[] intMins = null,
+            int[] intMaxs = null,
+            int stringLength = 10) {
+
+            string cql;
+            List<string> cqls = new List<string>();
+
+            // Default values
+            if (intMins == null) {
+                intMins = new int[] { 0 };
+            }
+            if (intMaxs == null) {
+                intMaxs = new int[] { 50 };
+            }
+
+            if (types.Count == 0 || intMaxs.Length != intMins.Length) {
+                return null;
+            }
+            int indexBoundaries;
+            for (int i = 0; i < amount; i++) {
+                indexBoundaries = 0;
+                cql = insertRoot + " VALUES (";
+                foreach (string t in types) {
+                    switch (t) {
+                        case "int":
+                            cql += GenerateRandomInt(intMins[indexBoundaries],
+                                intMaxs[indexBoundaries]) + ",";
+                            indexBoundaries++;
+                            break;
+                        case "double":
+                            cql += (double) GenerateRandomInt(intMins[indexBoundaries],
+                                intMaxs[indexBoundaries]) + ",";
+                            indexBoundaries++;
+                            break;
+                        case "string":
+                            cql += "'" + GenerateRandomString(stringLength) + "',";
+                            break;
+                        default:
+                            break;
+                    }
+
+                }
+                // Remove last ',' and close parenthesis
+                cql = cql.Substring(0, cql.Length - 1) + ");";
+                cqls.Add(cql);
+            }
+
+
+            return cqls;
+        }
         public static List<string> BuildInsertThousandSplitted(string insert, List<string> types, int amount,
             int[] intMins = null,int[] intMaxs = null,int stringLength = 10) {
 

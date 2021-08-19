@@ -1,4 +1,5 @@
-﻿using MongoDB.Driver;
+﻿using Cassandra;
+using MongoDB.Driver;
 using Neo4j.Driver;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,10 @@ namespace DBTestStresser.Model {
         public MongoClient MongoClient { get; set; }
 
         public IDriver Neo4jDriver { get; set; }
-        public ISession Neo4jSession { get; set; }
+        public Neo4j.Driver.ISession Neo4jSession { get; set; }
+
+        public Cluster CassandraCluster { get; set; }
+        public Session CassandraSession { get; set; }
 
         public Boolean NeedConnexionOpening { get; }
 
@@ -23,6 +27,7 @@ namespace DBTestStresser.Model {
         public static string T_CLASSIC = "Classic";
         public static string T_MONGO_CLIENT = "MongoClient";
         public static string T_NEO4J = "Neo4j";
+        public static string T_CASSANDRA = "CassandraCluster";
 
         public DatabaseConnection(DbConnection cnx) {
             this.Classic = cnx;
@@ -43,6 +48,12 @@ namespace DBTestStresser.Model {
             this.NeedConnexionOpening = true;
             this.ConnectionType = T_NEO4J;
         }
+
+        public DatabaseConnection(Cluster cassandraCluster) {
+            this.CassandraCluster = cassandraCluster;
+            this.NeedConnexionOpening = true;
+            this.ConnectionType = T_CASSANDRA;
+        }
         public object GetConnectionInstance() {
             object cnx = null;
             if (ConnectionType == T_CLASSIC) {
@@ -53,6 +64,9 @@ namespace DBTestStresser.Model {
                 Neo4jSession = Neo4jDriver.Session();
                 //Neo4jSession.SessionConfig = SessionConfigBuilder.ForDatabase(EntityDBMS.DB_NAME).;
                 cnx = Neo4jSession;
+            } else if (ConnectionType == T_CASSANDRA) {
+                CassandraSession = (Session)CassandraCluster.Connect();
+                cnx = CassandraSession;
             }
 
             return cnx;
@@ -76,6 +90,8 @@ namespace DBTestStresser.Model {
                     Classic.Open();
                 } else if (ConnectionType == T_NEO4J) {
                     // TODO BETTER
+                } else if (ConnectionType == T_CASSANDRA) {
+                    //CassandraCluster.Connect();
                 }
                     
             }
@@ -88,6 +104,8 @@ namespace DBTestStresser.Model {
                     Classic.Close();
                 } else if (ConnectionType == T_NEO4J) {
                     
+                } else if (ConnectionType == T_CASSANDRA) {
+                    CassandraCluster.Shutdown();
                 }
             }
                 

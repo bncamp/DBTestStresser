@@ -227,6 +227,7 @@
       <DependentUpon>GUI.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\DatabaseConnection.cs" />
+    <Compile Include="Model\DBMS\Cassandra.cs" />
     <Compile Include="Model\DBMS\MongoDb.cs" />
     <Compile Include="Model\DBMS\MySQL.cs" />
     <Compile Include="Model\DBMS\Neo4J.cs" />
