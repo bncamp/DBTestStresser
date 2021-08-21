@@ -51,6 +51,19 @@ namespace DBTestStresser.Util {
             return filters;
         }
 
+        public static string[] GenerateRandomSQLUpdateQueries(int amount) {
+            
+            string[] queries = new string[amount];
+            for (int i = 0; i < amount; i++) {
+                queries[i] = "UPDATE products SET stock=stock+1 WHERE id="
+                    + GenerateRandomInt(0, EntityDBMS.N_PRODUCTS);
+
+            }
+
+            return queries;
+            
+        }
+
         public static string[] GenerateRandomMongoJsons(int amount) {
             string[] jsons = new string[amount];
             
@@ -64,7 +77,7 @@ namespace DBTestStresser.Util {
         }
         public static string[] GenerateRandomSQLWriteQueries(int amount) {
             var queries = new string[amount];
-            // TODO STUB
+            
             for (int i = 0; i < amount; i++) {
                 queries[i] = String.Format("INSERT INTO orders(date,customer_id,product_id) " +
                     "VALUES ('{0}',{1},{2})",

@@ -1,5 +1,7 @@
 ﻿using DBTestStresser.Util;
 using Neo4j.Driver;
+using Nito.AsyncEx;
+using Nito.AsyncEx.Synchronous;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -109,14 +111,30 @@ namespace DBTestStresser.Model.DBMS {
         
 
         public override void ReadQuery(DatabaseConnection cnx, string query) {
-            var session = (ISession) cnx.GetConnectionInstance();
-            session.Run(query);
+            RunNeo4JQuery(cnx, query);
+        }
+        public override void WriteQuery(DatabaseConnection cnx, string query) {
+            RunNeo4JQuery(cnx, query);
+        }
+        public override void UpdateQuery(DatabaseConnection cnx, string query) {
+            RunNeo4JQuery(cnx, query);
         }
 
+        private void RunNeo4JQuery(DatabaseConnection cnx, string query) {
+            var c = (IDriver) cnx.GetConnectionInstance();
+            //var session = c.Session();
+            var asess = c.AsyncSession();
+            var cmd = asess.RunAsync(query);
+            var r = cmd.WaitAsync(new System.Threading.CancellationToken());
+            
+
+            //session.Run(query);
+        }
         public override string TestConnection() {
             var r = "Connected successfully !";
             try {
-                var sess = (ISession) GetConnection().GetConnectionInstance();
+                var c = (IDriver) GetConnection().GetConnectionInstance();
+                var sess = c.Session();
                 sess.Run("match (a) -> () RETURN a");
                 
             } catch (Exception e) {
@@ -127,9 +145,18 @@ namespace DBTestStresser.Model.DBMS {
             
         }
 
-        public override void WriteQuery(DatabaseConnection cnx, string query) {
-            var session = (ISession) cnx.GetConnectionInstance();
-            session.Run(query);
+        
+
+        
+
+        public override string[] GenerateRandomUpdateQueries(int amount) {
+            string[] queries = new string[amount];
+            for (int i = 0; i < amount; i++) {
+                queries[i] = String.Format("MATCH (p:Product) WHERE p.Id = {0} " +
+                    "SET p.Stock = p.Stock + 1",RandomDB.GenerateRandomInt(0,N_PRODUCTS));
+            }
+
+            return queries;
         }
     }
 }

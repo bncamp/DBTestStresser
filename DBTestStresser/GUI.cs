@@ -22,6 +22,7 @@ namespace DBTestStresser {
 
             cb_operation.Items.Add("Read");
             cb_operation.Items.Add("Write");
+            cb_operation.Items.Add("Update");
             cb_operation.SelectedIndex = 0;
 
             cb_dbms.Items.Add("PostgreSQL");

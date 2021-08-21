@@ -142,6 +142,8 @@ namespace DBTestStresser.Model.DBMS {
             cmd.ExecuteNonQuery();
         }
 
+        
+
         public override string TestConnection() {
             string ret = "Connection successful !";
             try {
@@ -153,6 +155,15 @@ namespace DBTestStresser.Model.DBMS {
             }
 
             return ret;
+        }
+
+        public override void UpdateQuery(DatabaseConnection cnx, string query) {
+            var cmd = new SqlCommand(query, (SqlConnection) cnx.GetConnectionInstance());
+            cmd.ExecuteNonQuery();
+        }
+
+        public override string[] GenerateRandomUpdateQueries(int amount) {
+            return RandomDB.GenerateRandomSQLUpdateQueries(amount);
         }
     }
 }

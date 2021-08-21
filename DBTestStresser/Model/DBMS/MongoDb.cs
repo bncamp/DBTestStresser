@@ -99,6 +99,7 @@ namespace DBTestStresser.Model.DBMS {
             var bson = BsonSerializer.Deserialize<BsonDocument>(json);
             
             orders.InsertOne(bson);
+            
         }
 
         public override string[] GenerateRandomReadQueries(int amount) {
@@ -124,6 +125,31 @@ namespace DBTestStresser.Model.DBMS {
             }
 
             return ret;
+        }
+
+        public override void UpdateQuery(DatabaseConnection cnx, string json) {
+            var client = new MongoClient(BuildConnectionString());
+            var db = client.GetDatabase(DB_NAME);
+            var products = db.GetCollection<BsonDocument>(C_PRODUCTS);
+            // Serialisation takes less than > 1ms in most cases :
+            // In average, 0.9% of thoses serialisations take more than 0 ms
+            // <=> neglected
+            var bson = BsonSerializer.Deserialize<BsonDocument>(json);
+            string filter = "{" +
+                String.Format("_id:{0}", RandomDB.GenerateRandomInt(0, N_PRODUCTS))
+                + "}";
+            
+            products.UpdateOne(filter,bson);
+        }
+
+        public override string[] GenerateRandomUpdateQueries(int amount) {
+            string[] queries = new string[amount];
+            string incrStockByOne = "{$inc: {stock:1}}";
+            for (int i = 0; i < amount; i++) {
+                queries[i] = incrStockByOne;
+            }
+
+            return queries;
         }
     }
 }

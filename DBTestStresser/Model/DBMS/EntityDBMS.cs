@@ -40,6 +40,8 @@ namespace DBTestStresser.Model {
 
         public abstract void ReadQuery(DatabaseConnection cnx, string query);
         public abstract void WriteQuery(DatabaseConnection cnx, string query);
+
+        public abstract void UpdateQuery(DatabaseConnection cnx, string query);
         public abstract void PopulateDB();
         public abstract string BuildConnectionString();
 
@@ -70,8 +72,11 @@ namespace DBTestStresser.Model {
             return dbms;
             
         }
+
+
         public abstract string[] GenerateRandomReadQueries(int amount);
         public abstract string[] GenerateRandomWriteQueries(int amount);
+        public abstract string[] GenerateRandomUpdateQueries(int amount);
 
         public abstract string TestConnection();
     }

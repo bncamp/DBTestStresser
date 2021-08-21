@@ -16,6 +16,7 @@ namespace DBTestStresser.Model.DBMS {
             
             this.Name = "MySQL";
         }
+
         public override string BuildConnectionString() {
             return String.Format(
                 "Server = {0};" +
@@ -29,6 +30,10 @@ namespace DBTestStresser.Model.DBMS {
 
         public override string[] GenerateRandomReadQueries(int amount) {
             return RandomDB.GenerateRandomSQLReadQueries(amount);
+        }
+
+        public override string[] GenerateRandomUpdateQueries(int amount) {
+            return RandomDB.GenerateRandomSQLUpdateQueries(amount);
         }
 
         public override string[] GenerateRandomWriteQueries(int amount) {
@@ -128,6 +133,11 @@ namespace DBTestStresser.Model.DBMS {
             }
 
             return ret;
+        }
+
+        public override void UpdateQuery(DatabaseConnection cnx, string query) {
+            var cmd = new MySqlCommand(query, (MySqlConnection) cnx.GetConnectionInstance());
+            cmd.ExecuteNonQuery();
         }
 
         public override void WriteQuery(DatabaseConnection cnx, string query) {

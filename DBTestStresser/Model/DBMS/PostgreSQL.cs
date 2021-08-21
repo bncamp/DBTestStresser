@@ -87,5 +87,14 @@ namespace DBTestStresser.Model.DBMS {
 
             return ret;
         }
+
+        public override void UpdateQuery(DatabaseConnection cnx, string query) {
+            var cmd = new NpgsqlCommand(query, (NpgsqlConnection) cnx.GetConnectionInstance());
+            cmd.ExecuteNonQuery();
+        }
+
+        public override string[] GenerateRandomUpdateQueries(int amount) {
+            return RandomDB.GenerateRandomSQLUpdateQueries(amount);
+        }
     }
 }

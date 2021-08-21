@@ -7,9 +7,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace DBTestStresser.Model.DBMS {
-    public class Cassandra : EntityDBMS {
 
+    
+    public class Cassandra : EntityDBMS {
+        private static PoolingOptions pooling = new PoolingOptions()
+            //.SetCoreConnectionsPerHost(HostDistance.Local, 100)
+            //.SetMaxConnectionsPerHost(HostDistance.Local, 100)
+            //.SetCoreConnectionsPerHost(HostDistance.Remote, 100)
+            //.SetMaxConnectionsPerHost(HostDistance.Remote, 100)
+            //.SetMaxSimultaneousRequestsPerConnectionTreshold(HostDistance.Local, 10000)
+            //.SetMinSimultaneousRequestsPerConnectionTreshold(HostDistance.Remote, 1);
+            ;
         public List<string> ContactPoints = new List<string>();
+
+        private PreparedStatement prep;
         public Cassandra(string ip, string port) {
             this.Ip = ip;
             ContactPoints.Add(ip);
@@ -24,6 +35,9 @@ namespace DBTestStresser.Model.DBMS {
             return new DatabaseConnection(
                 Cluster.Builder()
                .AddContactPoint(Ip)
+               .WithPoolingOptions(pooling)
+               .WithQueryOptions(new QueryOptions().SetConsistencyLevel(ConsistencyLevel.One))
+               .WithLoadBalancingPolicy(new RoundRobinPolicy())
                .Build()
             );
         }
@@ -31,9 +45,7 @@ namespace DBTestStresser.Model.DBMS {
             string r = "Connexion successful !";
 
             try {
-                var c = Cluster.Builder()
-               .AddContactPoint(this.Ip)
-               .Build();
+                var c = (Cluster)GetConnection().GetConnectionInstance();
 
                 c.Connect();
             } catch (Exception e) {
@@ -177,7 +189,7 @@ namespace DBTestStresser.Model.DBMS {
         }
 
         public override string[] GenerateRandomWriteQueries(int amount) {
-            string cql;
+            string cql = "";
             string[] cqls = new string[amount];
             for (int i = 0; i < amount; i++) {
                 cql = "BEGIN BATCH ";
@@ -198,7 +210,7 @@ namespace DBTestStresser.Model.DBMS {
                    RandomDB.GenerateRandomString(20),
                    RandomDB.GenerateRandomString(20),
                    RandomDB.GenerateRandomString(30));
-                
+
                 cql += String.Format("INSERT INTO ExampleStore.OrderProduct(order_id,product_id," +
                     "order_date," +
                     "product_name," +
@@ -219,14 +231,40 @@ namespace DBTestStresser.Model.DBMS {
             return cqls;
         }
 
+        private void ExecuteCassandraQuery(DatabaseConnection cnx, string query) {
+            var c = (Cluster) cnx.GetConnectionInstance();
+            //var sess = c.Connect();
+            //sess.Execute(query);
+            var sess = cnx.CassandraSession;
+
+            if (prep == null) {
+                prep = sess.Prepare(query);
+            }
+            var statement = prep.Bind();
+            var r = sess.ExecuteAsync(statement);
+            //r.Wait();
+        }
         public override void ReadQuery(DatabaseConnection cnx, string query) {
-            var sess = (Session) cnx.GetConnectionInstance();
-            sess.Execute(query);
+            ExecuteCassandraQuery(cnx, query);
+            
         }
 
         public override void WriteQuery(DatabaseConnection cnx, string query) {
-            var sess = (Session) cnx.GetConnectionInstance();
-            sess.Execute(query);
+            ExecuteCassandraQuery(cnx, query);
+        }
+
+        public override void UpdateQuery(DatabaseConnection cnx, string query) {
+            ExecuteCassandraQuery(cnx, query);
+        }
+
+        public override string[] GenerateRandomUpdateQueries(int amount) {
+            string[] queries = new string[amount];
+            string template = "UPDATE examplestore.product SET product_stock=20 WHERE product_id=";
+            for (int i = 0; i < amount; i++) {
+                queries[i] = template + RandomDB.GenerateRandomInt(0, N_PRODUCTS);
+            }
+
+            return queries;
         }
     }
 }

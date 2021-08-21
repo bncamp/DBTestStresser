@@ -40,13 +40,22 @@ namespace DBTestStresser.Model {
                         queries = DBMS.GenerateRandomWriteQueries(amount);                        
                         //queries = RandomDB.GenerateRandomSQLWriteQueries(amount);
                         break;
+                    case "Update":
+                        queries = DBMS.GenerateRandomUpdateQueries(amount);
+                        break;
                 }
 
                 t = new Test();
                 t.ConcurrencyAmount = amount;
                 t.Serie = this;
                 t.Queries = queries;
-                t.Execute();
+
+                if (DBMS.Name == "Cassandra") {
+                    t.ExecuteCassandraTest();
+                } else {
+                    t.Execute();
+                }
+                
             }
 
             GUI.Log("======== END =========");

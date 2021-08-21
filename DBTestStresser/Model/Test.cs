@@ -1,4 +1,5 @@
-﻿using DBTestStresser.Util;
+﻿using Cassandra;
+using DBTestStresser.Util;
 using DiagnosticsUtils;
 using Npgsql;
 using System;
@@ -81,6 +82,97 @@ namespace DBTestStresser.Model {
             }
         }
 
+        public void ExecuteCassandraTest() {
+            List<Task> tasks = new List<Task>();
+            Task t;
+            string query = "";
+            ConcurrentBag<long> threadTimes = new ConcurrentBag<long>();
+            ConcurrentBag<double> queriesTimes = new ConcurrentBag<double>();
+            ConcurrentBag<string> outputs = new ConcurrentBag<string>();
+
+            Stopwatch chrono = new Stopwatch();
+            Stopwatch thread = new Stopwatch();
+            GUI.Log("Running " + ConcurrencyAmount + " concurrents jobs...");
+            var dbms = this.Serie.DBMS;
+
+            chrono.Start();
+            var cnx = (Cluster)dbms.GetConnection().GetConnectionInstance();
+            var session = cnx.Connect();
+            PreparedStatement prep;
+            query = Queries[0];
+
+            
+
+            
+            var op = ConcurrentUtils.ConcurrentUtils.Times(ConcurrencyAmount, 512, _ =>
+                    ExecuteCassandraThread(threadTimes, session, Queries));
+            //for (int i = 0; i < ConcurrencyAmount; i++) {
+            //    //query = Queries[i];
+            //    //t = Task.Run(
+            //    //    () => ExecuteThread(this.Serie.DBMS, threadTimes, queriesTimes, outputs, query)
+            //    //);
+            //    //tasks.Add(t);
+                
+            //    //op.Wait();
+            //}
+            try {
+                Task.WaitAll(tasks.ToArray());
+                chrono.Stop();
+
+                // Mean query execution time
+                string debug = "COLLECTION SIZE: " + threadTimes.Count + " : {";
+                double threadMean = 0.0;
+                double queriesMean = 0.0;
+                double totalMean = 0.0;
+
+                foreach (long ms in threadTimes) {
+                    debug += ms + ',';
+                    threadMean += (double) ms;
+                }
+                foreach (double ms in queriesTimes) {
+                    debug += ms + ',';
+                    queriesMean += ms;
+                }
+                if (threadTimes.Count > 0) {
+                    threadMean = threadMean / threadTimes.Count;
+                    //queriesMean = queriesMean / queriesTimes.Count;
+                    //totalMean = chrono.ElapsedMilliseconds / queriesTimes.Count;
+                }
+                debug += "}";
+                //Console.WriteLine(debug);
+                GUI.Log("All jobs returned : ");
+                GUI.Log("average thread execution time : " + threadMean + " ms");
+                //GUI.Log("average query execution time : " + queriesMean + " ms");
+                //GUI.Log("total execution time / thread nb : " + totalMean + " ms");
+                GUI.Log("");
+                this.Serie.CSV += ConcurrencyAmount + ";" + threadMean + ";" + queriesMean + ";"
+                    + totalMean + "\n";
+            } catch (Exception e) {
+                chrono.Stop();
+                GUI.Log("Threads join failed : " + e.Message + "\n" + e.StackTrace);
+                GUI.Log("Outputs =============");
+                foreach (var err in outputs) {
+                    if (!String.IsNullOrEmpty(err)) {
+                        GUI.Log(err);
+                    }
+                }
+            }
+        }
+
+        public Task ExecuteCassandraThread(ConcurrentBag<long> threadTimes,ISession session,
+            string[] queries) {
+            Stopwatch s = new Stopwatch();
+            string query = queries[threadTimes.Count];
+            PreparedStatement p = session.Prepare(query);
+
+            s.Start();
+            var op = session.ExecuteAsync(p.Bind());
+            op.Wait();
+            s.Stop();
+
+            threadTimes.Add(s.ElapsedMilliseconds);
+            return op;
+        }
         public void ExecuteThread(EntityDBMS dbms,ConcurrentBag<long> threadTimes,
             ConcurrentBag<double> queryTimes,
             ConcurrentBag<string> outputs, string query) {
@@ -97,10 +189,18 @@ namespace DBTestStresser.Model {
                 if (cnx.NeedConnexionOpening)
                     cnx.Open();
                 
+                if (dbms.Name == "Cassandra") {
+
+                } else {
+
+                }
                 if (operation == "Read") {
                     dbms.ReadQuery(cnx, query);
                 } else if (operation == "Write"){
+                    
                     dbms.WriteQuery(cnx, query);
+                } else if (operation == "Update") {
+                    dbms.UpdateQuery(cnx, query);
                 }
 
                 if (cnx.NeedConnexionOpening)

@@ -61,12 +61,14 @@ namespace DBTestStresser.Model {
             } else if (ConnectionType == T_MONGO_CLIENT) {
                 cnx = MongoClient;
             } else if (ConnectionType == T_NEO4J) {
-                Neo4jSession = Neo4jDriver.Session();
+                //Neo4jSession = Neo4jDriver.Session();
                 //Neo4jSession.SessionConfig = SessionConfigBuilder.ForDatabase(EntityDBMS.DB_NAME).;
-                cnx = Neo4jSession;
+                //cnx = Neo4jSession;
+                cnx = Neo4jDriver;
             } else if (ConnectionType == T_CASSANDRA) {
                 CassandraSession = (Session)CassandraCluster.Connect();
-                cnx = CassandraSession;
+                //cnx = CassandraSession;
+                cnx = CassandraCluster;
             }
 
             return cnx;

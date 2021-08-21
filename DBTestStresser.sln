@@ -5,7 +5,9 @@ VisualStudioVersion = 16.0.31515.178
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DBTestStresser", "DBTestStresser\DBTestStresser.csproj", "{9B930A2B-0AA9-4E26-9A5D-3E5B3063E35E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SandBox", "SandBox\SandBox.csproj", "{17181AD4-F0AC-4DE1-BABF-DDFB63F8A42C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SandBox", "SandBox\SandBox.csproj", "{17181AD4-F0AC-4DE1-BABF-DDFB63F8A42C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CassandraDebug", "CassandraDebug\CassandraDebug.csproj", "{09F15360-FD04-490F-B268-FE87B803B255}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{17181AD4-F0AC-4DE1-BABF-DDFB63F8A42C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{17181AD4-F0AC-4DE1-BABF-DDFB63F8A42C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{17181AD4-F0AC-4DE1-BABF-DDFB63F8A42C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{09F15360-FD04-490F-B268-FE87B803B255}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09F15360-FD04-490F-B268-FE87B803B255}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09F15360-FD04-490F-B268-FE87B803B255}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09F15360-FD04-490F-B268-FE87B803B255}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
